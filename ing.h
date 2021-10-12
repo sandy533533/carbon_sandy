@@ -14,39 +14,57 @@
 #define __ING_H__
 
 #include "comm_def.h"
-#include "comm_func.h"
+//#include "comm_func.h"
+#include "fifo.h"
+
 
 struct ing : sc_module {
 
  //input
-    sc_in       <int>                clkcnt; 
-    sc_in       <pkt>               *in_port0;
-    sc_in       <pkt>               *in_port1;
-    sc_in       <pkt>               *in_port2;
-    sc_in       <pkt>               *in_port3;
-    sc_in       <pkt>               *in_port_bcpu;
-    sc_in       <pkt>               *in_port_mcpu;
+   sc_in       <int>                clkcnt; 
+   sc_in       <pkt>                in_port0;
+   sc_in       <pkt>                in_port1;
+   sc_in       <pkt>                in_port2;
+   sc_in       <pkt>                in_port3;
+   sc_in       <pkt>                in_port_bcpu;
+   sc_in       <pkt>                in_port_mcpu;
 
  //output
-    vector<sc_out<TRANS>*>          out_que;      
+    vector<sc_out<pkt>>              out_cell_que;      
 
-    void                            main_process();
+   void                            main_process();
+   void                            rev_pkt_process();
+   void                            port_rr_sch_process();
+   void                            lut_process();
+   void                            inque_process();
 
+   sc_signal     <pkt>             s_port_sch_result;
+ 
+   fifo                            fifo_port0;
+   fifo                            fifo_port1;
+   fifo                            fifo_port2;
+   fifo                            fifo_port3;
 
-     SC_CTOR(ing) 
-     {
-
-      in_port0 = new  sc_in<pkt>() ;
-
-
-
-      string debug_file = string("ingress_sach_debug.log");
-      m_bw_stat =new comm_stat_bw(m_cfg, debug_file,g_m_inter_num);
-
+ 
+   SC_CTOR(ing) 
+   {
+      out_cell_que.resize(g_que_num);
+      fifo_port0.full  = false;
+      fifo_port1.full  = false;
+      fifo_port2.full  = false;
+      fifo_port3.full  = false;
+      fifo_port0.empty = true;
+      fifo_port1.empty = true;
+      fifo_port2.empty = true;
+      fifo_port3.empty = true;
 
        SC_METHOD(main_process);
-       sensitive << clk.pos();
-
+       sensitive << in_port0;
+       sensitive << in_port1;
+       sensitive << in_port2;
+       sensitive << in_port3;
+       sensitive << in_port_bcpu;
+       sensitive << in_port_mcpu;
 
    }  
    
