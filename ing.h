@@ -14,59 +14,50 @@
 #define __ING_H__
 
 #include "comm_def.h"
-//#include "comm_func.h"
-#include "fifo.h"
-
+#include "ing_com_func.h"
 
 struct ing : sc_module {
 
  //input
-   sc_in       <int>                clkcnt; 
-   sc_in       <pkt>                in_port0;
-   sc_in       <pkt>                in_port1;
-   sc_in       <pkt>                in_port2;
-   sc_in       <pkt>                in_port3;
-   sc_in       <pkt>                in_port_bcpu;
-   sc_in       <pkt>                in_port_mcpu;
-
+    sc_in          <int>                clkcnt; 
+    vector<sc_in   <PKT>>               in_port;
  //output
-    vector<sc_out<pkt>>              out_cell_que;      
+    sc_out         <PKT>                out_cell_que;      
 
-   void                            main_process();
-   void                            rev_pkt_process();
-   void                            port_rr_sch_process();
-   void                            lut_process();
-   void                            inque_process();
+    void                                main_process();
+    void                                rev_pkt_process();
+    void                                port_rr_sch_process();
+    void                                lut_process();
+    void                                pkt_to_cell_process();
 
-   sc_signal     <pkt>             s_port_sch_result;
+    sc_signal     <PKT>                 s_port_sch_result;
+    int                                 que_id   ;
+    int                                 flow_id   ;
+
+    vector        <fifo>                fifo_port;
  
-   fifo                            fifo_port0;
-   fifo                            fifo_port1;
-   fifo                            fifo_port2;
-   fifo                            fifo_port3;
+ //   cell_shape_func                     *packet_to_cell_shape;
+    RR_SCH                              *rr_sch;
 
  
-   SC_CTOR(ing) 
-   {
-      out_cell_que.resize(g_que_num);
-      fifo_port0.full  = false;
-      fifo_port1.full  = false;
-      fifo_port2.full  = false;
-      fifo_port3.full  = false;
-      fifo_port0.empty = true;
-      fifo_port1.empty = true;
-      fifo_port2.empty = true;
-      fifo_port3.empty = true;
+    SC_CTOR(ing) 
+    {
+        in_port.resize(g_sport_num);
+  
+        for(int i=0; i < g_sport_num; i++)
+        {
+          fifo_port[i].full  = false;    
+          fifo_port[i].empty = true;
+        }
+  
+         SC_METHOD(main_process);
+        
+        for(int i=0; i < g_sport_num; i++)
+        {
+         sensitive << in_port[i];
+        }
 
-       SC_METHOD(main_process);
-       sensitive << in_port0;
-       sensitive << in_port1;
-       sensitive << in_port2;
-       sensitive << in_port3;
-       sensitive << in_port_bcpu;
-       sensitive << in_port_mcpu;
-
-   }  
+    }  
    
 };
 #endif

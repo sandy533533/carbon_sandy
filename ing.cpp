@@ -15,108 +15,131 @@
 void ing::main_process()
 {
   
-  rev_pkt_process();
-   port_rr_sch_process();
-   lut_process();
- 
+    rev_pkt_process();
+    port_rr_sch_process();
+    lut_process();
+    pkt_to_cell_process();
 }
 
 void ing::rev_pkt_process()
 {
 
-  int pkt_count_port0; 
-  int pkt_count_port1;
-
-  int drop_count_port0;
-  int drop_count_port1;
-
-   pkt_count_port0  = 0;
-   pkt_count_port1  = 0;
-
-   drop_count_port0 = 0;
-   drop_count_port1 = 0;
-
-    if (in_port0.event()) 
+    vector<int> pkt_count_port; 
+    vector<int> drop_count_port;
+ 
+    pkt_count_port.resize(g_sport_num);
+    drop_count_port.resize(g_sport_num);
+ 
+    for(int i=0; i < g_sport_num; i++)
     {
-	    pkt_count_port0++;
-	    if (fifo_port0.full == true) 
-        {
-            drop_count_port0++;
-        }   
-        else
-        {
-            fifo_port0.pkt_in(in_port0.read());
-        }
-    };  
+       pkt_count_port[i]  = 0;
+       drop_count_port[i] = 0;
+    }
 
-    if (in_port1.event()) 
+    for(int i=0; i < g_sport_num; i++)
     {
-	    pkt_count_port1++;
-	    if (fifo_port1.full == true) 
-            drop_count_port1++;
-        else 
-            fifo_port1.pkt_in(in_port1.read());
-    };  
+        if (in_port[i].event()) 
+        {
+	        pkt_count_port[i]++;
+	        if (fifo_port[i].full == true) 
+            {
+                drop_count_port[i]++;
+            }   
+            else
+            {
+                fifo_port[i].pkt_in(in_port[i].read());
+            }
+        };  
+       
 
-
-   cout << endl << endl << "-------------------------------------------------------------------------------" << endl;
-   cout << "End of rev_pkt_process..." << endl;
-   cout << "Total number of port0 packets received: " <<  pkt_count_port0 << endl;
-   cout << "Total number of port1 packets received: " <<  pkt_count_port0 << endl;
-   cout << "Total number of packets dropped: " <<  drop_count_port0 << endl;
-   cout << "Total number of packets dropped: " <<  drop_count_port1 << endl;
-   cout << "-------------------------------------------------------------------------------" << endl;
-  
+        cout << endl << endl << "-------------------------------------------------------------------------------" << endl;
+        cout << "End of rev_pkt_process..." << endl;
+        cout << "Total number of port packets received: " <<  pkt_count_port[i] << endl;
+        cout << "Total number of packets dropped: " <<  drop_count_port[i] << endl;
+        cout << "-------------------------------------------------------------------------------" << endl;
+    }
 }
 
 void ing::port_rr_sch_process()
 {
-
-    if(fifo_port0.empty == false)
+    for(int i=0; i < g_sport_num; i++)
     {
-        rr_sch->set_que_valid(0 ,true);    // que非空的时候才参与sch
-    }
-    else
-    {
-        rr_sch->set_que_valid(0 ,false);
-    }
-
-        if(fifo_port1.empty == false)
-    {
-        rr_sch->set_que_valid(1 ,true);    // que非空的时候才参与sch
-    }
-    else
-    {
-        rr_sch->set_que_valid(1 ,false);
-    }
-
+        if(fifo_port[i].empty == false)
+        {
+            rr_sch->set_que_valid(i ,true);    // que非空的时候才参与sch
+        }
+        else
+        {
+            rr_sch->set_que_valid(i ,false);
+        }
+    } 
 
     int  rst_que =-1;
     bool rst_flag = rr_sch->get_sch_result(rst_que);
 
     if(rst_flag ==true)
-    {   if (rst_que== 0) 
-        {
-   //         s_port_sch_result->write(fifo_port0..pkt_out()); 
-            s_port_sch_result = fifo_port0.pkt_out();
-
-        }
-        else if (rst_que== 1) 
-        {
-//            s_port_sch_result->write(fifo_port1.pkt_out()); 
-            s_port_sch_result = fifo_port1.pkt_out();
-
-        }
-
+    {   
+        s_port_sch_result = fifo_port[rst_que].pkt_out();
     }
+
 }    
 
 
 void ing::lut_process()
 {
   int sid ;
-  sid = s_port_sch_result->sport.id;
+  int did ;
+  int pri ;
+  int lut_key ;
+  sid = s_port_sch_result.read().sid;
+  did = s_port_sch_result.read().did;
+  pri = s_port_sch_result.read().pri ;
+ 
+ lut_key = sid + did ;
 
+}
+
+
+
+void ing::pkt_to_cell_process()
+{
+  int  pkt_tmp_len ;
+  int  cell_sn ;
+  PKT  cell_trans ;
+
+ 
+  cell_sn = 0;
+  pkt_tmp_len = s_port_sch_result.read().len;
+
+  if(pkt_tmp_len >=0)
+    {
+        if (pkt_tmp_len >=cell_len)
+        {
+            cell_trans = s_port_sch_result.read();
+            cell_trans.qid = que_id;
+            cell_trans.fid =flow_id;
+            cell_trans.vldl =256;            
+            cell_trans.csn = cell_sn;
+            cell_trans.eop = false;
+
+            out_cell_que.write(cell_trans);
+
+            pkt_tmp_len-=cell_len;
+            cell_sn++;
+
+        }
+        else
+        {
+            cell_trans = s_port_sch_result.read();
+            cell_trans.qid = que_id;
+            cell_trans.fid =flow_id;
+            cell_trans.vldl =pkt_tmp_len;            
+            cell_trans.csn = cell_sn;
+            cell_trans.eop = true;
+            out_cell_que.write(cell_trans);
+            pkt_tmp_len = 0;
+        }
+    }
 
 
 }
