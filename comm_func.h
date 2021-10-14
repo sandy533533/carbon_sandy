@@ -6,6 +6,38 @@
 
 using namespace std;
 
+
+class RR_SCH
+{
+    public:
+        int que_num;
+        int sch_pos;
+        vector<int> que_status;
+    public:
+        RR_SCH(int tmp_que_num);
+        void set_que_valid(int que_id, bool valid_flag);
+        bool  get_sch_result(int &rst_que);
+
+};
+
+
+                                                     
+class SP_SCH
+{
+    public:
+        int que_num;
+        int sch_pos;
+        vector<int> que_status;
+    public:
+        SP_SCH(int tmp_que_num);
+        void set_que_valid(int que_id, bool valid_flag);
+        void set_que_hpri (int que_id);
+        bool  get_sch_result(int &rst_que);
+
+};
+
+
+
 class comm_shape_func
 {
     //令牌填充10CC填充13个Byte，这算速率13*8*100M=1.04G,如果当前桶内令牌数>=包长,则允许报文发出，同时扣除相应令牌数，
@@ -23,7 +55,6 @@ class comm_shape_func
 
 
 };
-/*
 
 template <class T>
 class comm_delay_fifo: public sc_module
@@ -68,7 +99,6 @@ void comm_delay_fifo<T>::main_process()
     m_cycle_cnt ++;
 }
 
-*/
 class comm_stat_bw
 {
     public:
@@ -86,6 +116,30 @@ class comm_stat_bw
         void record_bw_info(int que_id, int valid_len, int is_eop);
         void print_bw_info(int m_cycle);
 };
+
+struct fifo {
+
+   PKT_STR regs[4];
+   bool full;
+   bool empty;
+   sc_uint<3> pntr;
+  
+   // constructor
+
+   fifo()
+    {
+      full = false;
+      empty = true;
+      pntr = 0;
+    }
+
+  // methods
+   
+   void pkt_in(const PKT_STR& data_pkt);
+   
+   PKT_STR pkt_out();
+};
+
 
 
 

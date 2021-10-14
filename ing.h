@@ -14,23 +14,25 @@
 #define __ING_H__
 
 #include "comm_def.h"
-#include "ing_com_func.h"
+#include "comm_func.h"
 
 struct ing : sc_module {
 
  //input
-    sc_in          <int>                clkcnt; 
-    vector<sc_in   <PKT>>               in_port;
+ //   sc_in          <int>                clkcnt; 
+    sc_in_clk                            clk;
+
+    vector<sc_in<PKT_STR>*>               in_port;
  //output
-    sc_out         <PKT>                out_cell_que;      
+//    sc_out         <PKT_STR>             out_cell_que;      
 
     void                                main_process();
     void                                rev_pkt_process();
     void                                port_rr_sch_process();
-    void                                lut_process();
+   // void                                lut_process();
     void                                pkt_to_cell_process();
 
-    sc_signal     <PKT>                 s_port_sch_result;
+    sc_signal     <PKT_STR>             s_port_sch_result;
     int                                 que_id   ;
     int                                 flow_id   ;
 
@@ -40,21 +42,41 @@ struct ing : sc_module {
     RR_SCH                              *rr_sch;
 
  
+    vector        <int>                  pkt_count_port; 
+    vector        <int>                  infifo_count_port; 
+    vector        <int>                  drop_count_port;
+
+
+
     SC_CTOR(ing) 
     {
+        rr_sch = new RR_SCH(g_sport_num) ;
+
         in_port.resize(g_sport_num);
-  
+        fifo_port.resize(g_sport_num);
+
+        pkt_count_port.resize(g_sport_num);
+        infifo_count_port.resize(g_sport_num);
+        drop_count_port.resize(g_sport_num);
+
+
         for(int i=0; i < g_sport_num; i++)
         {
+         in_port[i] = new sc_in<PKT_STR>;
+
+          pkt_count_port[i]  = 0;
+          infifo_count_port[i]  = 0;
+          drop_count_port[i] = 0;
           fifo_port[i].full  = false;    
           fifo_port[i].empty = true;
         }
   
          SC_METHOD(main_process);
-        
+ //        sensitive << clk.pos();
+     
         for(int i=0; i < g_sport_num; i++)
         {
-         sensitive << in_port[i];
+          sensitive << *in_port[i];
         }
 
     }  

@@ -11,10 +11,10 @@ packet_gen_module::packet_gen_module(sc_module_name name, global_config_c *glb_c
     m_cfg = glb_cfg;
     
     output.resize(g_sport_num);
- //   for(int i=0; i < g_sport_num; i++)
- //   {
- //       output[i] = new sc_out<PKT>;
- //   }
+    for(int i=0; i < g_sport_num; i++)
+    {
+        output[i] = new sc_out<PKT_STR>;
+    }
     //init shape
     packet_shape.resize(g_sport_num);
     for(int i=0; i < g_sport_num; i++)
@@ -70,7 +70,8 @@ void packet_gen_module::packet_gen_process()
         if(packet_shape[i]->shape_status(256)) //包长是否够  packet_shape获取hape_status(256)的指针地址，return是1，还是0 ？
         {
             m_packet_id++;  
-            PKT new_trans ;
+            PKT_STR new_trans ;
+
             new_trans.fsn = m_packet_id;
             new_trans.sid = i;
             new_trans.did = 0;
@@ -81,7 +82,7 @@ void packet_gen_module::packet_gen_process()
             new_trans.vldl= 0;     
             new_trans.csn = 0;
             new_trans.eop = true;
-            output[i].write(new_trans);
+            output[i]->write(new_trans);
 
             //stat
             m_bw_stat->record_bw_info(i, new_trans.len, true);

@@ -12,7 +12,7 @@ class packet_gen_module: public sc_module
 {
   public: 
   // 二维数组，多端口的output接口，每个output都是sc_fifo_out类型的，格式是TRANS
-    vector<sc_out<PKT>>    output;
+    vector<sc_out<PKT_STR>*>    output;
     sc_in_clk clk;
     int m_cycle_cnt;
     int m_packet_id;

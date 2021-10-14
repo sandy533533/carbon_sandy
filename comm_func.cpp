@@ -1,4 +1,6 @@
 #include "comm_func.h"
+#include "comm_def.h"
+
 #include "string.h"
 #include <iostream>
 comm_shape_func::comm_shape_func(int shape_value, int tmp_cbs_value, int add_value, int fill_period)
@@ -35,6 +37,85 @@ bool comm_shape_func::shape_status(int packet_len)
     }
   
 }
+
+RR_SCH::RR_SCH(int tmp_que_num)
+{
+    que_num = tmp_que_num;
+    que_status.resize(que_num,0);   //que-status is a vector ,size = que_num ,value = 0
+    sch_pos = 0;
+}
+
+void RR_SCH::set_que_valid(int que_id, bool valid_flag)
+{
+    if(que_id >= que_num)
+    {
+        cout << "error rr que_id" << que_id <<endl;
+    }
+    else
+    {
+        que_status[que_id] = valid_flag;
+    }
+}
+
+bool  RR_SCH::get_sch_result(int &rst_que)
+{
+    int tmp_pos = sch_pos;
+    for (int i=0; i< que_num; i++)
+    {
+        tmp_pos = (sch_pos +i) % que_num;
+
+        if(que_status[tmp_pos] == 1)
+        {
+            sch_pos =(tmp_pos +1) % que_num;
+            rst_que = tmp_pos;
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+
+SP_SCH::SP_SCH(int tmp_que_num)
+{
+    que_num = tmp_que_num;
+    que_status.resize(que_num,0);   //que-status is a vector ,size = que_num ,value = 0
+    sch_pos = 0;
+}
+
+void SP_SCH::set_que_valid(int que_id, bool valid_flag)
+{
+    if(que_id >= que_num)
+    {
+        cout << "error sp que_id" << que_id <<endl;
+    }
+    else
+    {
+        que_status[que_id] = valid_flag;
+    }
+}
+
+bool  SP_SCH::get_sch_result(int &rst_que)
+{
+    int tmp_pos = sch_pos;
+
+//        tmp_pos = sch_pos% que_num;
+
+        if(que_status[tmp_pos] == 1)
+        {
+            sch_pos =tmp_pos;
+            rst_que = tmp_pos;
+            return true;
+        }
+        else
+        {
+ //           tmp_pos++ ;
+            sch_pos = (tmp_pos +1) % que_num;
+        }
+
+   
+    return false;
+} 
 
 
 //统计类相关
@@ -103,3 +184,24 @@ void comm_stat_bw::print_bw_info(int m_cycle)
 
     fclose(m_fp);
 }
+
+
+void fifo::pkt_in(const PKT_STR& data_pkt)
+    {
+      regs[pntr++] = data_pkt; empty = false;
+      if (pntr == 4) full = true;      
+    }
+
+    PKT_STR fifo::pkt_out()
+    {
+       PKT_STR temp;
+       temp = regs[0];
+       if (--pntr == 0) empty = true;
+       else 
+	{ 
+            regs[0] = regs[1];
+	    regs[1] = regs[2];
+	    regs[2] = regs[3];
+        } 
+      return(temp);  
+    }
