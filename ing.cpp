@@ -18,7 +18,7 @@ void ing::main_process()
   
     rev_pkt_process();
     port_rr_sch_process();
- //   lut_process();
+    lut_process();
     pkt_to_cell_process();
 }
 
@@ -44,7 +44,7 @@ void ing::rev_pkt_process()
 
         cout << endl << endl << "-------------------------------------------------------------------------------" << endl;
         cout << "End of rev_pkt_process..." << endl;
-         cout << "port id ..." << i<< endl;       
+        cout << "port id ..." << i<< endl;       
         cout << "number of port" << i << " packets received: " <<  pkt_count_port[i] << endl;
         cout << "number of port" << i << " packets info: " <<  infifo_count_port[i] << endl;
         cout << "number of port" << i << " packets dropped: " <<  drop_count_port[i] << endl;
@@ -85,22 +85,24 @@ void ing::port_rr_sch_process()
 
 }    
 
-/*
+
 void ing::lut_process()
 {
-  int sid ;
-  int did ;
-  int pri ;
-  int lut_key ;
-  sid = s_port_sch_result.read().sid;
-  did = s_port_sch_result.read().did;
-  pri = s_port_sch_result.read().pri ;
- 
- lut_key = sid + did ;
+    int sid ;
+    int did ;
+    int pri ;
+    int lut_key ;
+    sid = s_port_sch_result.read().sid;
+    did = s_port_sch_result.read().did;
+    pri = s_port_sch_result.read().pri ;
 
+    lut_key = sid + did ;
+
+    que_id = lut_key ;
+    flow_id = lut_key*2 ; 
 }
 
-*/
+
 
 void ing::pkt_to_cell_process()
 {
@@ -114,32 +116,29 @@ void ing::pkt_to_cell_process()
 
   if(pkt_tmp_len >=0)
     {
-        if (pkt_tmp_len >=cell_len)
+        while (pkt_tmp_len >=cell_len)
         {
             cell_trans = s_port_sch_result.read();
             cell_trans.qid = que_id;
             cell_trans.fid =flow_id;
-            cell_trans.vldl =256;            
+            cell_trans.vldl =cell_len;            
             cell_trans.csn = cell_sn;
             cell_trans.eop = false;
 
  //           out_cell_que.write(cell_trans);
-
             pkt_tmp_len-=cell_len;
             cell_sn++;
 
         }
-        else
-        {
-            cell_trans = s_port_sch_result.read();
-            cell_trans.qid = que_id;
-            cell_trans.fid =flow_id;
-            cell_trans.vldl =pkt_tmp_len;            
-            cell_trans.csn = cell_sn;
-            cell_trans.eop = true;
-//            out_cell_que.write(cell_trans);
-            pkt_tmp_len = 0;
-        }
+        
+        cell_trans = s_port_sch_result.read();
+        cell_trans.qid = que_id;
+        cell_trans.fid =flow_id;
+        cell_trans.vldl =pkt_tmp_len;            
+        cell_trans.csn = cell_sn;
+        cell_trans.eop = true;
+//      out_cell_que.write(cell_trans);
+        pkt_tmp_len = 0;
     }
 
 

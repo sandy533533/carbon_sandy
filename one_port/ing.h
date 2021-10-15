@@ -19,9 +19,7 @@
 struct ing : sc_module {
 
  //input
- //   sc_in          <int>                clkcnt; 
-    sc_in_clk                            clk;
-
+    sc_in          <int>                clkcnt; 
     sc_in<PKT_STR>                      in_port;
  //output
  //   sc_out         <PKT_STR>             out_cell_que;      
@@ -42,7 +40,6 @@ struct ing : sc_module {
     sc_signal     <PKT_STR>             s_port_sch_result;
 
         
- 
    SC_CTOR(ing) 
    {           
       fifo_port.full  = false;    
@@ -53,25 +50,10 @@ struct ing : sc_module {
 
       rr_sch = new RR_SCH(1) ;
 
-//        in_port.resize(g_sport_num);
-//        fifo_port.resize(g_sport_num);
-//
-//        for(int i=0; i < g_sport_num; i++)
-//        {
-//          fifo_port[i].full  = false;    
-//          fifo_port[i].empty = true;
-//        }
-  
-         SC_METHOD(main_process);
- //        sensitive << clk.pos();
-        sensitive << in_port;
-;
-    
- //       for(int i=0; i < g_sport_num; i++)
- //       {
- //        sensitive << in_port[i];
- //       }
+      SC_METHOD(main_process);
+      sensitive << in_port;
 
+    
     }  
    
 };

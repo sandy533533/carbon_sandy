@@ -19,17 +19,15 @@
 struct ing : sc_module {
 
  //input
- //   sc_in          <int>                clkcnt; 
-    sc_in_clk                            clk;
-
-    vector<sc_in<PKT_STR>*>               in_port;
+    sc_in          <int>                clkcnt; 
+    vector<sc_in<PKT_STR>*>             in_port;
  //output
 //    sc_out         <PKT_STR>             out_cell_que;      
 
     void                                main_process();
     void                                rev_pkt_process();
     void                                port_rr_sch_process();
-   // void                                lut_process();
+    void                                lut_process();
     void                                pkt_to_cell_process();
 
     sc_signal     <PKT_STR>             s_port_sch_result;
@@ -37,15 +35,11 @@ struct ing : sc_module {
     int                                 flow_id   ;
 
     vector        <fifo>                fifo_port;
- 
- //   cell_shape_func                     *packet_to_cell_shape;
+    vector        <int>                 pkt_count_port; 
+    vector        <int>                 infifo_count_port; 
+    vector        <int>                 drop_count_port;
+
     RR_SCH                              *rr_sch;
-
- 
-    vector        <int>                  pkt_count_port; 
-    vector        <int>                  infifo_count_port; 
-    vector        <int>                  drop_count_port;
-
 
 
     SC_CTOR(ing) 
@@ -62,17 +56,16 @@ struct ing : sc_module {
 
         for(int i=0; i < g_sport_num; i++)
         {
-         in_port[i] = new sc_in<PKT_STR>;
+            in_port[i] = new sc_in<PKT_STR>;
 
-          pkt_count_port[i]  = 0;
-          infifo_count_port[i]  = 0;
-          drop_count_port[i] = 0;
-          fifo_port[i].full  = false;    
-          fifo_port[i].empty = true;
+            pkt_count_port[i]     = 0;
+            infifo_count_port[i]  = 0;
+            drop_count_port[i]    = 0;
+            fifo_port[i].full     = false;    
+            fifo_port[i].empty    = true;
         }
   
-         SC_METHOD(main_process);
- //        sensitive << clk.pos();
+        SC_METHOD(main_process);
      
         for(int i=0; i < g_sport_num; i++)
         {
