@@ -18,10 +18,10 @@ int sc_main(int argc, char *argv[])
 
 {
 
-   sc_clock                             clk        ("clk",100,SC_NS);  //100ns 对应10MHZ 
+   sc_clock                               clk        ("clk",100,SC_NS);  //100ns 对应10MHZ 
 
    sc_signal<PKT_STR>                     tmp_singal;  
-  // sc_signal          <int>             clkcnt; 
+   sc_signal          <int>               clkcnt; 
 
     
    global_config_c *glb_cfg = new global_config_c();
@@ -31,7 +31,7 @@ int sc_main(int argc, char *argv[])
    pkt_gen_mod.clk(clk);
 
    ing ing_mod("u_ing");
-   ing_mod.clk(clk);
+   ing_mod.clkcnt(clkcnt);
 
      pkt_gen_mod.output(tmp_singal);
      ing_mod.in_port(tmp_singal);
