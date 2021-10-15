@@ -7,6 +7,7 @@
 #include "comm_def.h"
 #include "comm_func.h"
 //#include "ing_com_func.h"
+#include "clk_cnt.h"
 
 #include "ing.h"
 
@@ -29,6 +30,12 @@ int sc_main(int argc, char *argv[])
  
     ing ing_mod("u_ing");
     ing_mod.clkcnt(clkcnt);
+
+    clk_cnt clk_cnt_mode("clk_cnt");
+    clk_cnt_mode.CLK(clk);
+    clk_cnt_mode.out_clk_cnt(clkcnt);
+    
+ 
  
     for(int i =0; i < g_sport_num; i++)
     {
@@ -38,7 +45,7 @@ int sc_main(int argc, char *argv[])
         ing_mod.in_port[i]->bind(*tmp_singal[i]);
     }
   
-    sc_start(1,SC_MS);
+    sc_start(40,SC_US);
 
     return 0;
 }

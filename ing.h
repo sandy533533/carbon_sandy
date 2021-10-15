@@ -33,6 +33,7 @@ struct ing : sc_module {
     sc_signal     <PKT_STR>             s_port_sch_result;
     int                                 que_id   ;
     int                                 flow_id   ;
+    int                                 pkt_tmp_len = 0 ;
 
     vector        <fifo>                fifo_port;
     vector        <int>                 pkt_count_port; 
@@ -66,11 +67,12 @@ struct ing : sc_module {
         }
   
         SC_METHOD(main_process);
+        sensitive <<clkcnt;
      
-        for(int i=0; i < g_sport_num; i++)
-        {
-          sensitive << *in_port[i];
-        }
+ //       for(int i=0; i < g_sport_num; i++)
+ //       {
+ //         sensitive << *in_port[i];
+ //       }
 
     }  
    

@@ -76,7 +76,7 @@ void packet_gen_module::packet_gen_process()
             new_trans.sid = i;
             new_trans.did = 0;
             new_trans.pri = 3;                                  
-            new_trans.len = 1000;
+            new_trans.len = 200;
             new_trans.qid = 0;
             new_trans.fid = 0;
             new_trans.vldl= 0;     

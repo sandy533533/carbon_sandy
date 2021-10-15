@@ -109,7 +109,6 @@ void
 }
 
 
-
 // 全局配置
 class global_config_c
 {
