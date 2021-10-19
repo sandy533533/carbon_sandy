@@ -3,6 +3,61 @@
 
 #include "string.h"
 #include <iostream>
+std:: map<has_rule_key_s,int> g_hash_rule_tab;
+
+bool TAB_CONFIG::InitMap()
+{
+
+  has_rule_key_s hash_rule_key_0;
+  has_rule_key_s hash_rule_key_1;
+  has_rule_key_s hash_rule_key_2;
+  has_rule_key_s hash_rule_key_3;
+  
+  hash_rule_key_0.did = 0;
+  hash_rule_key_0.sid = 0;
+  hash_rule_key_0.pri = 0;
+  
+  hash_rule_key_1.did = 1;
+  hash_rule_key_1.sid = 0;
+  hash_rule_key_1.pri = 0;
+  
+  hash_rule_key_2.did = 2;
+  hash_rule_key_2.sid = 0;
+  hash_rule_key_2.pri = 0;
+
+  hash_rule_key_3.did = 3;
+  hash_rule_key_3.sid = 0;
+  hash_rule_key_3.pri = 0;
+
+  int  fid0 = 15;
+  int  fid1 = 16;
+  int  fid2 = 17;
+  int  fid3 = 18;
+
+//数组方式：
+#if 0 
+  g_hash_rule_tab[hash_rule_key_0]= 15;
+  g_hash_rule_tab[hash_rule_key_1]= 16;
+  g_hash_rule_tab[hash_rule_key_2]= 17;
+  g_hash_rule_tab[hash_rule_key_3]= 18;
+#endif
+//insert
+ g_hash_rule_tab.insert(make_pair (hash_rule_key_0, fid0));
+ g_hash_rule_tab.insert(make_pair (hash_rule_key_1, fid1));
+ g_hash_rule_tab.insert(make_pair (hash_rule_key_2, fid2));
+ g_hash_rule_tab.insert(make_pair (hash_rule_key_3, fid3));
+ int a = g_hash_rule_tab.size();
+ 
+    
+for(std::map<has_rule_key_s,int>::iterator iter = g_hash_rule_tab.begin(); iter != g_hash_rule_tab.end(); ++iter) 
+{
+        std::cout << iter->second<< std::endl;
+    }
+        return true;
+
+}
+
+
 comm_shape_func::comm_shape_func(int shape_value, int tmp_cbs_value, int add_value, int fill_period)
 {
     
@@ -205,3 +260,7 @@ void fifo::pkt_in(const PKT_STR& data_pkt)
         } 
       return(temp);  
     }
+
+
+
+  

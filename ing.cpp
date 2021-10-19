@@ -14,8 +14,6 @@
 
 void ing::main_process()
 {
-
-  
     rev_pkt_process();
     port_rr_sch_process();
     lut_process();
@@ -79,18 +77,38 @@ void ing::port_rr_sch_process()
 
 void ing::lut_process()
 {
-    int sid ;
-    int did ;
-    int pri ;
-    int lut_key ;
-    sid = s_port_sch_result.read().sid;
-    did = s_port_sch_result.read().did;
-    pri = s_port_sch_result.read().pri ;
+    if (hash_tab_config->InitMap() == true)
+    {
+       cout<<"init tab finsh "<<endl;  
 
-    lut_key = sid + did ;
+    };
+    int s_sid ;
+    int s_did ;
+    int s_pri ;
+    s_sid = s_port_sch_result.read().sid;
+    s_did = s_port_sch_result.read().did;
+    s_pri = s_port_sch_result.read().pri ;
 
-    que_id = lut_key ;
-    flow_id = lut_key*2 ; 
+    has_rule_key_s hash_pkt_lut_key;
+
+    hash_pkt_lut_key.sid= s_sid;
+    hash_pkt_lut_key.did= s_did;
+    hash_pkt_lut_key.pri= s_pri;
+
+    std::map<has_rule_key_s,int>::iterator iter= g_hash_rule_tab.find(hash_pkt_lut_key); 
+  
+    if(iter != g_hash_rule_tab.end())   
+    {
+       cout<<"Find, the value is "<<iter->second<<endl;  
+       flow_id = iter->second;
+       cout<<"Fid "<< flow_id <<endl;  
+    } 
+    else 
+    {  
+
+    }
+
+    que_id = flow_id;  
 }
 
 

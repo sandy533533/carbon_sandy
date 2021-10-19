@@ -27,7 +27,6 @@ class packet_gen_module: public sc_module
 
     global_config_c            *m_cfg;
     comm_stat_bw               *m_bw_stat;
-    
   public:
   // 成员函数声明
     packet_gen_module(sc_module_name name, global_config_c *glb_cfg);

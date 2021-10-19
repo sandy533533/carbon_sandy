@@ -41,11 +41,14 @@ struct ing : sc_module {
     vector        <int>                 drop_count_port;
 
     RR_SCH                              *rr_sch;
-
+    TAB_CONFIG                          *hash_tab_config ;
 
     SC_CTOR(ing) 
     {
         rr_sch = new RR_SCH(g_sport_num) ;
+        hash_tab_config = new TAB_CONFIG() ;
+
+        std::map<has_rule_key_s,int>g_hash_rule_tab;
 
         in_port.resize(g_sport_num);
         fifo_port.resize(g_sport_num);

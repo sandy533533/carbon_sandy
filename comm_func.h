@@ -6,6 +6,12 @@
 
 using namespace std;
 
+class TAB_CONFIG 
+{
+    public:
+	bool InitMap();
+
+};
 
 class RR_SCH
 {
@@ -139,7 +145,6 @@ struct fifo {
    
    PKT_STR pkt_out();
 };
-
 
 
 

@@ -45,6 +45,7 @@ int sc_main(int argc, char *argv[])
         ing_mod.in_port[i]->bind(*tmp_singal[i]);
     }
   
+
     sc_start(40,SC_US);
 
     return 0;

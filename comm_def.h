@@ -3,6 +3,8 @@
 
 #include "stdio.h"
 #include <memory>
+#include <map>
+
 #include "systemc.h"
 #include "tlm"
 #include "tlm_utils/multi_passthrough_initiator_socket.h"
@@ -131,21 +133,31 @@ class global_config_c
    }
 }; 
 
-class table_xid_to_qid
+//extern map<int flow_rule_s> g_flow_rule_tab;
+
+struct  has_rule_key_s
 {
-      public:
-      map  <int, int>    Map_xid2qid;
+   /* data */
+   int sid;
+   int did;
+   int pri;
 
-      table_xid_to_qid()
-      {
-      }
+inline bool operator < (const has_rule_key_s& keys)const{
+return !(keys.sid == sid && keys.did == did && keys.pri == pri);
+};
 
+   has_rule_key_s()
+   {
+      sid = -1;
+      did = -1;
+      pri = -1;
+   }
 
 };
 
-
-
-
+extern std::map<has_rule_key_s,int> g_hash_rule_tab;
+//typedef  std::map<has_rule_key_s,int> g_hash_rule_tab;
+ 
 #define  ASSERT(A)  (assert(A))
 
 

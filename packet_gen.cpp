@@ -9,7 +9,7 @@ packet_gen_module::packet_gen_module(sc_module_name name, global_config_c *glb_c
     m_cycle_cnt =0;
     m_packet_id =0;
     m_cfg = glb_cfg;
-    
+
     output.resize(g_sport_num);
     for(int i=0; i < g_sport_num; i++)
     {
@@ -46,7 +46,8 @@ packet_gen_module::packet_gen_module(sc_module_name name, global_config_c *glb_c
 
 void packet_gen_module::packet_gen_process()
 {
-   m_cycle_cnt++;  
+   m_cycle_cnt++;
+
 //stat
     if((m_cycle_cnt !=0) && (m_cycle_cnt % (m_cfg->stat_period *100) ==0))
    {
@@ -71,7 +72,6 @@ void packet_gen_module::packet_gen_process()
         {
             m_packet_id++;  
             PKT_STR new_trans ;
-
             new_trans.fsn = m_packet_id;
             new_trans.sid = i;
             new_trans.did = 0;
@@ -87,5 +87,9 @@ void packet_gen_module::packet_gen_process()
             //stat
             m_bw_stat->record_bw_info(i, new_trans.len, true);
         }
-   }   
+   }  
+
+ // std::map<has_rule_key_s,int>g_hash_rule_tab;
+
+  
 }
