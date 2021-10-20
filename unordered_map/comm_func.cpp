@@ -4,11 +4,14 @@
 #include "string.h"
 #include <iostream>
 
-std::unordered_map<has_rule_key_s,int> g_hash_rule_tab;
+std::unordered_map<has_rule_key_s,int,has_rule_key_hash> g_hash_rule_tab;
 
-bool TAB_CONFIG::InitMap(int tab_sid, int tab_did, int tab_pri, int tab_fid)
+//空的 vector 容器，因为容器中没有元素，所以没有为其分配空间。当添加第一个元素（比如使用 push_back() 函数）时，vector 会自动分配内存。
+std::vector<s_flow_rule>  g_flow_rule_tab; 
+
+bool TAB_CONFIG::InitMap(int tab_sid, int tab_did, int tab_pri, int tab_len,int tab_sport,int tab_dport,
+                         int tab_fspeed,int tab_len2add,int tab_fid,int tab_qid)
 {
-
     has_rule_key_s hash_rule_key_0;
     
     hash_rule_key_0.did = tab_did;
@@ -24,12 +27,29 @@ bool TAB_CONFIG::InitMap(int tab_sid, int tab_did, int tab_pri, int tab_fid)
 //insert
     g_hash_rule_tab.insert(make_pair (hash_rule_key_0, fid0));
     int a = g_hash_rule_tab.size();
- 
+     (void)a;
     
-    for(std::unordered_map<has_rule_key_s,int>::iterator iter = g_hash_rule_tab.begin(); iter != g_hash_rule_tab.end(); ++iter) 
-    {
+  //  for(std::unordered_map<has_rule_key_s,int>::iterator iter = g_hash_rule_tab.begin(); iter != g_hash_rule_tab.end(); ++iter) 
+    for(auto iter = g_hash_rule_tab.begin(); iter != g_hash_rule_tab.end(); ++iter) {
 //        std::cout << iter->second<< std::endl;
     }
+    //调用 reserve() 成员函数来增加容器的容量
+    g_flow_rule_tab.reserve(16);
+
+    s_flow_rule flow_rule_value;
+    flow_rule_value.sid            =  tab_sid;
+    flow_rule_value.did            =  tab_did;
+    flow_rule_value.len            =  tab_len;
+    flow_rule_value.pri            =  tab_pri;
+    flow_rule_value.sport          =  tab_sport;
+    flow_rule_value.dport          =  tab_dport;
+    flow_rule_value.qid            =  tab_qid;
+    flow_rule_value.len2add        =  tab_len2add;
+    flow_rule_value.flow_speed     =  tab_fspeed;
+
+    std::vector<s_flow_rule>g_flow_rule_tab(fid0,flow_rule_value);
+ //   g_flow_rule_tab.insert(fid0,flow_rule_value);
+
     return true;
 }
 

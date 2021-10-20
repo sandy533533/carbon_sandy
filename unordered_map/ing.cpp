@@ -103,7 +103,9 @@ void ing::lut_process()
        flow_id = 257;
     }
 
-    que_id = flow_id;  
+    std::unordered_map<has_rule_key_s,int>::iterator iter= g_hash_rule_tab.find(hash_pkt_lut_key); 
+
+    que_id = g_flow_rule_tab.at(flow_id);  
 }
 
 

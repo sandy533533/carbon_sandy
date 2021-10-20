@@ -142,6 +142,7 @@ struct  has_rule_key_s
    int did;
    int pri;
 
+// map 需要重构 <
 //inline bool operator < (const has_rule_key_s& keys)const{
 //return !(keys.sid == sid && keys.did == did && keys.pri == pri);
 //};
@@ -159,7 +160,46 @@ return (keys.sid == sid && keys.did == did && keys.pri == pri);
 
 };
 
-extern std::unordered_map<has_rule_key_s,int> g_hash_rule_tab;
+
+struct has_rule_key_hash
+{
+    std::size_t operator() (const has_rule_key_s &key) const
+    {
+        return key.sid ^ key.did ^ key.pri;
+    }
+};
+
+extern std::unordered_map<has_rule_key_s,int,has_rule_key_hash> g_hash_rule_tab;
+
+struct s_flow_rule
+{
+   int sid;
+   int did;
+   int len;
+   int pri;
+   int sport;
+   int dport;
+   int qid;
+   int len2add;
+   int flow_speed;
+
+   s_flow_rule()
+   {
+      sid =-1;
+      did =-1;
+      len =-1;
+      pri =-1;
+      sport =-1;
+      dport =-1;
+      qid =-1;
+      len2add =-1;
+      flow_speed =-1;
+   }
+};
+
+extern vector<s_flow_rule>  g_flow_rule_tab;
+
+
  
 #define  ASSERT(A)  (assert(A))
 

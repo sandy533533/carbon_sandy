@@ -119,7 +119,7 @@ class comm_stat_bw
 class TAB_CONFIG 
 {
     public:
-	bool InitMap(int tab_sid, int tab_did, int tab_pri,int tab_fid);
+	bool InitMap(int tab_sid, int tab_did, int tab_pri, int tab_len,int tab_sport,int tab_dport,int tab_fspeed,int tab_len2add,int tab_fid,int tab_qid);
 };
 
 

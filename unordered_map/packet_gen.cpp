@@ -76,8 +76,8 @@ void packet_gen_module::packet_gen_process()
             new_trans.did = 0;
             new_trans.pri = 3;                                  
             new_trans.len = 200;
-            new_trans.qid = 0;
-            new_trans.fid = i+15;
+            new_trans.qid = -1;
+            new_trans.fid = -1;
             new_trans.vldl= 0;     
             new_trans.csn = 0;
             new_trans.eop = true;
@@ -86,8 +86,8 @@ void packet_gen_module::packet_gen_process()
             //stat
             m_bw_stat->record_bw_info(i, new_trans.len, true);
 
-//          InitMap(int tab_sid, int tab_did, int tab_pri,int tab_fid);
-            hash_tab_config->InitMap(i,new_trans.did,new_trans.pri,new_trans.fid);
+//          	bool InitMap(int tab_sid, int tab_did, int tab_pri, int tab_len,int tab_sport,int tab_dport,int fspeed,int len2add,int tab_fid,int tab_qid);
+            hash_tab_config->InitMap(i,new_trans.did,new_trans.pri,200,i,new_trans.did,134,3,i+15,i+18);
         }
    }  
 
