@@ -10,6 +10,8 @@
 #include "tlm_utils/multi_passthrough_initiator_socket.h"
 #include "string.h"
 #include<vector>
+//#include<deque>
+
 #include <assert.h>
 
 using namespace std;
@@ -18,7 +20,7 @@ using namespace tlm;
 
 
 const int g_m_freq  = 100; //100M HZ
-const int g_sport_num =4;
+const int g_inter_num =4;
 const int g_que_num =  4;
 const int cell_len  = 64;
 const int g_m_ipg_len =20;
@@ -69,9 +71,9 @@ typedef struct trans_type
       vldl   =0;  
       eop    =false;
    }
-} PKT_STR; 
+} s_pkt_desc; 
 
-typedef  std::shared_ptr<PKT_STR>  pkt_ptr;
+typedef  std::shared_ptr<s_pkt_desc>  pkt_ptr;
 
 inline
 ostream&
@@ -125,7 +127,7 @@ class global_config_c
    global_config_c()
    {
       m_freq = g_m_freq;
-      m_inter_num =g_sport_num; 
+      m_inter_num =g_inter_num; 
       m_sch_sel = 1;
       shape_value = 1000;
       stat_period = 10;        
@@ -182,7 +184,6 @@ struct s_flow_rule
    int qid;
    int len2add;
    int flow_speed;
-
 
    s_flow_rule()
    {

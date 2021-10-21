@@ -29,12 +29,11 @@ bool TAB_CONFIG::InitMap(int tab_sid, int tab_did, int tab_pri, int tab_len,int 
     int a = g_hash_rule_tab.size();
      (void)a;
     
-  //  for(std::unordered_map<has_rule_key_s,int>::iterator iter = g_hash_rule_tab.begin(); iter != g_hash_rule_tab.end(); ++iter) 
     for(auto iter = g_hash_rule_tab.begin(); iter != g_hash_rule_tab.end(); ++iter) {
-//        std::cout << iter->second<< std::endl;
     }
     //调用 reserve() 成员函数来增加容器的容量
     s_flow_rule init_flow_rule_value;
+   
     s_flow_rule flow_rule_value;
     flow_rule_value.sid            =  tab_sid;
     flow_rule_value.did            =  tab_did;
@@ -51,6 +50,7 @@ bool TAB_CONFIG::InitMap(int tab_sid, int tab_did, int tab_pri, int tab_len,int 
      g_flow_rule_tab.resize(fid0+1,flow_rule_value);
 
     return true;
+
 }
 
 
@@ -237,15 +237,15 @@ void comm_stat_bw::print_bw_info(int m_cycle)
 }
 
 
-void fifo::pkt_in(const PKT_STR& data_pkt)
+void fifo::pkt_in(const s_pkt_desc& data_pkt)
     {
       regs[pntr++] = data_pkt; empty = false;
       if (pntr == 4) full = true;      
     }
 
-    PKT_STR fifo::pkt_out()
+    s_pkt_desc fifo::pkt_out()
     {
-       PKT_STR temp;
+       s_pkt_desc temp;
        temp = regs[0];
        if (--pntr == 0) empty = true;
        else 

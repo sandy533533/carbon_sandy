@@ -30,10 +30,12 @@ struct ing : sc_module {
     void                                  lut_process();
     void                                  pkt_to_cell_process();
 
-    sc_signal     <PKT_STR>               s_port_sch_result;
+    PKT_STR                               s_port_sch_result;
     int                                   que_id   ;
     int                                   flow_id   ;
     int                                   pkt_tmp_len = 0 ;
+    int                                   pkt_out_flag = 0 ;
+    s_flow_rule                           flow_rule;
 
     array <fifo,g_sport_num>              fifo_port;
     array <int,g_sport_num>               pkt_count_port; 
