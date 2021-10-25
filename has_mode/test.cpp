@@ -35,7 +35,7 @@ int sc_main(int argc, char *argv[])
     clk_cnt clk_cnt_mode("clk_cnt");
     clk_cnt_mode.CLK(clk);
     clk_cnt_mode.out_clk_cnt(clkcnt);
-    
+        clk_cnt_mode.out_clk_cnt(clkcnt);
  
  
     for(int i =0; i < g_inter_num; i++)
