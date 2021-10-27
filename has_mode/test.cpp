@@ -50,6 +50,6 @@ int sc_main(int argc, char *argv[]) {
     
     //test git merge --远程修改，本地修改不同文件
     
-    //test git merge1 --远程修改,本地也修改同一文件
+    //test git merge1 --远程修改,本地也修改同一文件相同的行上
     return 0;
 }
