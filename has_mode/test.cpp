@@ -31,7 +31,6 @@ int sc_main(int argc, char *argv[]) {
     clk_cnt_mode.CLK(clk);
     clk_cnt_mode.out_clk_cnt(clkcnt);
 
-
     for (int i = 0; i < G_INTER_NUM; i++) {
         tmp_singal[i] = new sc_signal<s_pkt_desc>;
 
@@ -43,5 +42,6 @@ int sc_main(int argc, char *argv[]) {
 
     sc_start(40, SC_US);
 
+    //test git diff --比较工作区和暂存区的不同
     return 0;
 }
