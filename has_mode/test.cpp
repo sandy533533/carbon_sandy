@@ -43,5 +43,7 @@ int sc_main(int argc, char *argv[]) {
     sc_start(40, SC_US);
 
     //test git diff --比较工作区和暂存区的不同
+
+    //test git diff  origin/main--比较本地和远程库的不同
     return 0;
 }
