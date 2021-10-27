@@ -10,6 +10,8 @@
 
 using namespace std;
 
+//test merge ：本地修改&&！add ,相同文件不同行数
+
 int sc_main(int argc, char *argv[]) {
     sc_clock clk("clk", 100, SC_NS); // 100ns 对应10MHZ
     sc_signal<int> clkcnt;
