@@ -46,6 +46,8 @@ int sc_main(int argc, char *argv[]) {
 
     //test git diff  origin/main--比较本地和远程库的不同
     
-    //test git merge --远程修改
+    //test git merge --远程修改，本地修改不同文件
+    
+    //test git merge1 --远程修改,本地也修改同一文件
     return 0;
 }
