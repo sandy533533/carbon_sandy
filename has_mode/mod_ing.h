@@ -1,7 +1,9 @@
 #ifndef __MOD_ING_H__
 #define __MOD_ING_H__
+
 #include "comm_def.h"
-#include "comm_func.h"
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////
 // Project： SystemC虚拟项目
@@ -12,11 +14,12 @@
 // Date: 2021.10.14 第一版
 // Hierarchy : 编号，索引公共库
 ////////////////////////////////////////////////////////
-class mod_ing : public sc_module
+
+class mod_ing: public sc_module
 {
 public:
-    sc_in<int> clkcnt;
-    array<sc_in<s_pkt_desc> *, g_inter_num> in_port;
+    sc_in<int> in_clk_cnt;
+    std::array<sc_in<s_pkt_desc> *, G_INTER_NUM> in_port;
     // output
     sc_out<s_pkt_desc> out_cell_que;
 
@@ -28,21 +31,36 @@ public:
     void port_rr_sch_process();
     void lut_process();
     void pkt_to_cell_process();
-
+//    ~mod_ing();
 private:
     s_pkt_desc s_port_sch_result;
     int que_id;
+    int dport_id; 
     int flow_id;
     int pkt_tmp_len = 0;
     int pkt_out_flag = 0;
+    int pkt_head_flag = 0;
     s_flow_rule flow_rule;
 
-    array<deque<s_pkt_desc>, g_inter_num>
-        fifo_port;
-    array<int, g_inter_num> pkt_count_port;
-    array<int, g_inter_num> infifo_count_port;
-    array<int, g_inter_num> drop_count_port;
+    std::array<std::deque<s_pkt_desc>, G_INTER_NUM> fifo_port;
+    std::array<int, G_INTER_NUM> pkt_count_port;
+    std::array<int, G_INTER_NUM> infifo_count_port;
+    std::array<int, G_INTER_NUM> drop_count_port;
+
+    std::array<int, G_INTER_NUM> sport_pkt_cnt ;
+    std::array<int, G_INTER_NUM> dport_pkt_cnt;
+    std::array<int, G_INTER_NUM> sport_pkt_cell_cnt;
+    std::array<int, G_INTER_NUM> dport_pkt_cell_cnt;
+    std::array<int, G_QUE_NUM> que_pkt_cnt;
+    std::array<int, G_QUE_NUM> que_pkt_cell_cnt;
+    std::array<int, 16> flow_pkt_cnt;
+    std::array<int, 16> flow_pkt_cell_cnt; 
 
     RR_SCH *rr_sch;
 };
-#endif
+
+
+
+
+
+#endif // __MOD_ING_H__

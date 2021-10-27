@@ -10,13 +10,13 @@ packet_gen_module::packet_gen_module(sc_module_name name, global_config_c *glb_c
     m_packet_id =0;
     m_cfg = glb_cfg;
 
-    for(int i=0; i < g_inter_num; i++)
+    for(int i=0; i < G_INTER_NUM; i++)
     {
         output[i] = new sc_out<s_pkt_desc>;
     }
     //init shape
-    packet_shape.resize(g_inter_num);
-    for(int i=0; i < g_inter_num; i++)
+    packet_shape.resize(G_INTER_NUM);
+    for(int i=0; i < G_INTER_NUM; i++)
     {
 // comm_shape_func(int shape_value, int tmp_cbs_value, int add_value, int fill_period);
 // shape_value  = 1000
@@ -29,7 +29,7 @@ packet_gen_module::packet_gen_module(sc_module_name name, global_config_c *glb_c
     
 //stat
     string debug_file = string("packet_gen_debug.log");
-    m_bw_stat =new comm_stat_bw(m_cfg, debug_file,g_inter_num);
+ //   m_bw_stat =new comm_stat_bw(m_cfg, debug_file,G_INTER_NUM);
     hash_tab_config = new TAB_CONFIG() ;
 
     SC_METHOD(packet_gen_process);
@@ -48,16 +48,16 @@ void packet_gen_module::packet_gen_process()
    m_cycle_cnt++;
 
 //stat
-    if((m_cycle_cnt !=0) && (m_cycle_cnt % (m_cfg->stat_period *100) ==0))
-   {
-       m_bw_stat->print_bw_info(m_cycle_cnt);
-   }
+//    if((m_cycle_cnt !=0) && (m_cycle_cnt % (10 *100) ==0))
+//   {
+//       m_bw_stat->print_bw_info(m_cycle_cnt);
+//   }
    
 
    //填桶
     if((m_cycle_cnt !=0) &&(m_cycle_cnt % 10 ==0))    
     {
-        for(int i=0; i < g_inter_num; i++)
+        for(int i=0; i < G_INTER_NUM; i++)
         {
             packet_shape[i]->add_token(13);  //10cc填充13个
         }    
@@ -65,20 +65,21 @@ void packet_gen_module::packet_gen_process()
     
    //4端口轮询
    //没有 256B的payload，只是传递了len是256的信息，因为不关注payload的内容
-   for(int i=0; i < g_inter_num; i++)
+   for(int i=0; i < G_INTER_NUM; i++)
    {
         if(packet_shape[i]->shape_status(256)) //包长是否够  packet_shape获取hape_status(256)的指针地址，return是1，还是0 ？
         {
             m_packet_id++;  
      //     	bool InitMap(int tab_sid, int tab_did, int tab_pri, int tab_len,int tab_sport,int tab_dport,int fspeed,int len2add,int tab_fid,int tab_qid);
 
-            hash_tab_config->InitMap(i,0,3,200,i,0,134,3,i+15,i+18);
+            hash_tab_config->InitMap(i,0,3,200,0,i,134,3,i+15,i+18);
 
             s_pkt_desc new_trans ;
             new_trans.fsn = m_packet_id;
             new_trans.sid = i;
             new_trans.did = 0;
-            new_trans.pri = 3;                                  
+            new_trans.pri = 3;   
+            new_trans.sport = i;                                  
             new_trans.len = 200;
             new_trans.qid = -1;
             new_trans.fid = -1;
@@ -88,7 +89,7 @@ void packet_gen_module::packet_gen_process()
             output[i]->write(new_trans);
 
             //stat
-            m_bw_stat->record_bw_info(i, new_trans.len, true);
+ //           m_bw_stat->record_bw_info(i, new_trans.len, true);
 
         }
    }  

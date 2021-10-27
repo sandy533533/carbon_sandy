@@ -1,119 +1,224 @@
 #ifndef __COMM_DEF_H__
 #define __COMM_DEF_H__
 
-#include "stdio.h"
+#include <stdio.h>
 #include <memory>
+#include <string.h>
+#include <sstream>
+#include <array>
+#include <vector>
+#include <deque>
+#include <map>
 #include <unordered_map>
-
-#include "systemc.h"
-#include "tlm"
-#include "tlm_utils/multi_passthrough_initiator_socket.h"
-#include "string.h"
-#include<vector>
-//#include<deque>
-
 #include <assert.h>
-
+#include "systemc.h"
 using namespace std;
-using namespace tlm_utils;
-using namespace tlm;
+////////////////////////////////////////////////////////
+// Project： SystemC虚拟项目
+// Module:   commdef
+// Description: 全局定义文件
+// Group：预研组
+// Author: Newton
+// Date: 2021.10.14 第一版
+// Hierarchy : 编号，索引公共库
+////////////////////////////////////////////////////////
 
+const int G_FREQ = 100; //100M HZ
+const int G_INTER_NUM = 4;
+const int G_QUE_NUM = 16;
+const int G_CELL_LEN = 64;
 
-const int g_m_freq  = 100; //100M HZ
-const int g_inter_num =4;
-const int g_que_num =  4;
-const int cell_len  = 64;
-const int g_m_ipg_len =20;
-
-typedef struct trans_type
+enum DESC_TYPE
 {
-   int  sid;
-   int  did;
-   int  pri;
+    DESC_TYPE_NULL = -1,
+    DESC_TYPE_PKT = 0,
+    DESC_TYPE_CELL = 1
+};
 
-   int  fsn;
-   int  len;
-
-   int  sport;
-   int  dport;
-
- 
-   int  qid;
-   int  fid;
-
-   int  csn;
-   int  vldl;
-   bool eop;
-   
-    inline bool operator == (const trans_type& rhs) const
-   {
-     return (rhs.sid == sid && rhs.did == did && rhs.pri == pri &&rhs.fsn == fsn && rhs.len == len && rhs.sport == sport&& rhs.dport == dport
-            &&rhs.qid == qid && rhs.fid == fid && rhs.csn == csn && rhs.vldl == vldl&&rhs.eop == eop);
-   }
-
-
-   trans_type()
-   {
-      sid    =0;
-      did    =0;     
-      pri    =0;
-
-      fsn    =0;
-      len    =0;
-
-      dport  =0;
-      sport  =0;
-
-      qid    =0;
-      fid    =0;
-
-      csn    =0;
-      vldl   =0;  
-      eop    =false;
-   }
-} s_pkt_desc; 
-
-typedef  std::shared_ptr<s_pkt_desc>  pkt_ptr;
-
-inline
-ostream&
-operator << ( ostream& os, const trans_type& /* a */ )
+struct s_pkt_desc
 {
-    os << "streaming of struct TRANS_STR not implemented";
+    int type; // 0 packet 1 cell
+    int fid;  // flow id，对应Flow号，和激励对应
+    int sid;  // 用于三元组匹配
+    int did;  // 用于三元组匹配
+    int fsn;
+    int len;   // 包长度
+    int pri;   // 报文优先级
+    int sport; // 源端口号，与ing入口侧端口对应
+    int dport; // 目的端口号，与engress出口侧端口对应
+    int qid;   // queue 号，队列号，对应ing/sch里的que号
+    int vldl;  // 有效报文长度，只有cell状态下有意义
+    int csn;   // cell切片号， 只有cell状态下有意义
+    int sop;   // 首切片，只有cell状态下有意义
+    int eop;   // 尾切片，只有cell状态下有意义
+
+    s_pkt_desc():
+        type(DESC_TYPE_NULL),
+        fid(-1),
+        sid(-1),
+        did(-1),
+        fsn(-1),
+        len(-1),
+        pri(-1),
+        sport(-1),
+        dport(-1),
+        qid(-1),
+        vldl(-1),
+        csn(-1),
+        sop(-1),
+        eop(-1)
+    {
+    }
+
+    inline bool operator==(const s_pkt_desc &rhs) const
+    {
+        return ((rhs.type == type) && (rhs.fid == fid) && (rhs.sid == sid)
+                && (rhs.did == did) && (rhs.fsn == fsn) && (rhs.len == len)
+                && (rhs.pri == pri) && (rhs.sport == sport) && (rhs.dport == dport)
+                && (rhs.qid == qid) && (rhs.vldl == vldl) && (rhs.csn == csn)
+                && (rhs.sop == sop) && (rhs.eop == eop));
+    }
+};
+
+inline ostream &operator<<(ostream &os, const s_pkt_desc &a /* a */)
+{
+    os << "[type:" << a.type;
+    os << ",fid:" << a.fid;
+    os << ",sid:" << a.sid;
+    os << ",did:" << a.did;
+    os << ",fsn:" << a.fsn;
+    os << ",len:" << a.len;
+    os << ",pri:" << a.pri;
+    os << ",sport:" << a.sport;
+    os << ",dport:" << a.dport;
+    os << ",qid:" << a.qid;
+    os << ",vldl:" << a.vldl;
+    os << ",csn:" << a.csn;
+    os << ",sop:" << a.sop;
+    os << ",eop:" << a.eop << "]" << endl;
     return os;
 }
 
-
-inline
-void
+//inline void sc_trace(sc_trace_file *tf, const s_pkt_desc &a, const std::string &name)
+//{
+//    sc_trace(tf, a.sport, name + ".data");
+//}
+inline void
 #if defined(SC_API_VERSION_STRING)
-    sc_trace( sc_trace_file* tf, const trans_type& a, const std::string& name )
+sc_trace(sc_trace_file *tf, const s_pkt_desc &a, const std::string &name)
 #else
-    sc_trace( sc_trace_file* tf, const trans_type& a, const sc_string& name )
+sc_trace(sc_trace_file *tf, const s_pkt_desc &a, const sc_string &name)
 #endif
 {
-  sc_trace( tf, a.sid, name + ".sid" );
-  sc_trace( tf, a.did, name + ".did" );
-  sc_trace( tf, a.pri, name + ".pri" );
-
-  sc_trace( tf, a.fsn, name + ".fsn" );
-  sc_trace( tf, a.len, name + ".len" );
-
-  sc_trace( tf, a.dport, name + ".dport" );
-  sc_trace( tf, a.sport, name + ".sport" );
-
-  sc_trace( tf, a.qid, name + ".qid" );
-  sc_trace( tf, a.fid, name + ".fid" ); 
-
-  sc_trace( tf, a.vldl, name + ".vldl");
-  sc_trace( tf, a.csn, name + ".csn" );
-  sc_trace( tf, a.eop, name + ".eop" );
-
-
+    sc_trace(tf, a.type, name + ".type");
+    sc_trace(tf, a.fid, name + ".fid");
+    sc_trace(tf, a.sid, name + ".sid");
+    sc_trace(tf, a.did, name + ".did");
+    sc_trace(tf, a.fsn, name + ".fsn");
+    sc_trace(tf, a.len, name + ".len");
+    sc_trace(tf, a.pri, name + ".pri");
+    sc_trace(tf, a.sport, name + ".sport");
+    sc_trace(tf, a.dport, name + ".dport");
+    sc_trace(tf, a.qid, name + ".qid");
+    sc_trace(tf, a.vldl, name + ".vldl");
+    sc_trace(tf, a.csn, name + ".csn");
+    sc_trace(tf, a.sop, name + ".sop");
+    sc_trace(tf, a.eop, name + ".eop");
 }
 
+// fid映射规则表内容
+struct s_flow_rule
+{
+    int sid;
+    int did;
+    int len;
+    int pri;
+    int sport;
+    int dport;
+    int qid;
+    int len2add;
+    int flow_speed;
 
-// 全局配置
+    s_flow_rule():
+        sid(-1),
+        did(-1),
+        len(-1),
+        pri(-1),
+        sport(-1),
+        dport(-1),
+        qid(-1),
+        len2add(-1),
+        flow_speed(-1)
+    {
+    }
+};
+
+//hash规则表KEY值
+struct s_hash_rule_key
+{
+    int sid;
+    int did;
+    int pri;
+
+    s_hash_rule_key():
+        sid(-1),
+        did(-1),
+        pri(-1)
+    {
+    }
+
+    inline bool operator==(const s_hash_rule_key &rhs) const
+    {
+        return (rhs.sid == sid && rhs.did == did && rhs.pri == pri);
+    }
+
+    inline bool operator<(const s_hash_rule_key &rhs) const
+    {
+        return !(rhs.sid == sid && rhs.did == did && rhs.pri == pri);
+    }
+};
+
+struct has_rule_key_hash
+{
+    std::size_t operator()(const s_hash_rule_key &key) const
+    {
+        return key.sid ^ key.did ^ key.pri;
+    }
+};
+
+// 定义两个别名，用于que队列表和port端口表
+typedef int s_tab_que;
+typedef int s_tab_port;
+
+// fid映射规则表项,key fid,查表得到映射表
+extern std::vector<s_flow_rule> g_flow_rule_tab;
+// Hash规则表项，查表得到fid号
+extern std::unordered_map<s_hash_rule_key, int, has_rule_key_hash> g_hash_rule_tab;
+
+// que_rule规则表项，查表得到rr_weight权重,key为qid号
+extern std::vector<s_tab_que> g_que_rule_tab;
+
+// port_rule规则表项，查表得到port_speed号,key为port号
+extern std::vector<s_tab_port> g_port_rule_tab;
+
+//产生全局时钟计数器
+extern int g_cycle_cnt;
+
+//产生全局配置
+//class glb_cfg_c
+//{
+//public:
+//    glb_cfg_c(std::string file_name);
+//    void read_cfg_file(std::string file_name);
+//    void gen_cfg_table();
+//
+//public:
+//    std::vector<std::vector<int>> g_flow_tab_relate; //两维度；其中第一维是表项深度（包括key和value项），二维是index及value的横向展开
+//    std::vector<std::vector<int>> g_hash_tab_relate; //两维度；其中第一维是表项深度（包括key和value项），二维是index及value的横向展开
+//    std::vector<std::vector<int>> g_que_tab_relate;  //两维度；其中第一维是表项深度（包括key和value项），二维是index及value的横向展开
+//    std::vector<std::vector<int>> g_port_tab_relate; //两维度；其中第一维是表项深度（包括key和value项），二维是index及value的横向展开
+//};
+
 class global_config_c
 {
    public:
@@ -126,8 +231,8 @@ class global_config_c
 
    global_config_c()
    {
-      m_freq = g_m_freq;
-      m_inter_num =g_inter_num; 
+      m_freq = G_FREQ;
+      m_inter_num =G_INTER_NUM; 
       m_sch_sel = 1;
       shape_value = 1000;
       stat_period = 10;        
@@ -135,76 +240,77 @@ class global_config_c
    }
 }; 
 
-//extern map<int flow_rule_s> g_flow_rule_tab;
 
-struct  has_rule_key_s
+//公共调度器函数
+class WRR_SCH
 {
-   /* data */
-   int sid;
-   int did;
-   int pri;
+public:
+    int que_num;
+    int sch_pos;
+    std::vector<int> que_status;
+    std::vector<int> init_weight;
+    std::vector<int> cur_weight;
 
-// map 需要重构 <
-//inline bool operator < (const has_rule_key_s& keys)const{
-//return !(keys.sid == sid && keys.did == did && keys.pri == pri);
-//};
-
-inline bool operator == (const has_rule_key_s& keys)const{
-return (keys.sid == sid && keys.did == did && keys.pri == pri);
+public:
+    WRR_SCH(int tmp_que_num, std::vector<int> tmp_weight);
+    void set_que_valid(int que_id, bool valid_flag);
+    bool get_sch_result(int &rst_que);
+    void reload_weight_value();
 };
-
-   has_rule_key_s()
-   {
-      sid = -1;
-      did = -1;
-      pri = -1;
-   }
-
-};
-
-
-struct has_rule_key_hash
+class RR_SCH
 {
-    std::size_t operator() (const has_rule_key_s &key) const
-    {
-        return key.sid ^ key.did ^ key.pri;
-    }
+public:
+    int que_num;
+    int sch_pos;
+    std::vector<int> que_status;
+
+public:
+    RR_SCH(int tmp_que_num);
+    void set_que_valid(int que_id, bool valid_flag);
+    bool get_sch_result(int &rst_que);
 };
 
-extern std::unordered_map<has_rule_key_s,int,has_rule_key_hash> g_hash_rule_tab;
-
-struct s_flow_rule
+class SP_SCH
 {
-   int sid;
-   int did;
-   int len;
-   int pri;
-   int sport;
-   int dport;
-   int qid;
-   int len2add;
-   int flow_speed;
+public:
+    int que_num;
+    int sch_pos;
+    std::vector<int> que_status;
 
-   s_flow_rule()
-   {
-      sid =-1;
-      did =-1;
-      len =-1;
-      pri =-1;
-      sport =-1;
-      dport =-1;
-      qid =-1;
-      len2add =-1;
-      flow_speed =-1;
-   }
+public:
+    SP_SCH(int tmp_que_num);
+    void set_que_valid(int que_id, bool valid_flag);
+    void set_que_hpri(int que_id);
+    bool get_sch_result(int &rst_que);
 };
 
-extern vector<s_flow_rule>  g_flow_rule_tab;
+
+class TAB_CONFIG 
+{
+    public:
+	bool InitMap(int tab_sid, int tab_did, int tab_pri, int tab_len,int tab_sport,int tab_dport,int tab_fspeed,int tab_len2add,int tab_fid,int tab_qid);
+};
 
 
- 
-#define  ASSERT(A)  (assert(A))
+
+class comm_shape_func
+{
+    //令牌填充10CC填充13个Byte，这算速率13*8*100M=1.04G,如果当前桶内令牌数>=包长,则允许报文发出，同时扣除相应令牌数，
+    //如果令牌小于包长,则不允许发出，令牌周期性的填充，最大填充桶深为CBS
+    public:
+       int cbs_value;
+       int token_value;
+       int fill_period;
+    
+    public:
+       comm_shape_func(int shape_value, int tmp_cbs_value, int add_value, int fill_period);
+       void add_token(int add_value);     //单位Byte
+       void sub_token(int sub_value);     //单位Byte
+       bool shape_status(int packet_len); //单位Byte
 
 
+};
 
-#endif
+#define ASSERT(A) (assert(A))
+
+#endif //__COMM_DEF_H__
