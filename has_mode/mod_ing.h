@@ -65,6 +65,18 @@ private:
 
      //test mergre:本地和远程修改在相同的行数上！add && commit   
      //test mergre:本地和远程修改在相同的行数上！add && commit   
+          //test mergre:本地和远程修改在相同的行数上！add && commit   
+     //test mergre:本地和远程修改在相同的行数上！add && commit      
+     //test mergre:本地和远程修改在相同的行数上！add && commit   
+     //test mergre:本地和远程修改在相同的行数上！add && commit      
+     //test mergre:本地和远程修改在相同的行数上！add && commit   
+     //test mergre:本地和远程修改在相同的行数上！add && commit       
+     //test mergre:本地和远程修改在相同的行数上！add && commit   
+     //test mergre:本地和远程修改在相同的行数上！add && commit       
+     //test mergre:本地和远程修改在相同的行数上！add && commit   
+     //test mergre:本地和远程修改在相同的行数上！add && commit       
+     //test mergre:本地和远程修改在相同的行数上！add && commit   
+     //test mergre:本地和远程修改在相同的行数上！add && commit  
     
     
 };
