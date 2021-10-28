@@ -58,31 +58,9 @@ private:
     std::array<int, 16> flow_pkt_cell_cnt; 
 
     RR_SCH *rr_sch;
-    //test mergre:本地和远程修改在不同的行数上！add && commit
-    //test mergre:本地修改在相同的行数上！add && commit
-    //test mergre:本地修改在相同的行数上！add && commit
 
-
-     //test mergre:本地和远程修改在相同的行数上！add && commit   
-     //test mergre:本地和远程修改在相同的行数上！add && commit   
-          //test mergre:本地和远程修改在相同的行数上！add && commit   
-     //test mergre:本地和远程修改在相同的行数上！add && commit      
-     //test mergre:本地和远程修改在相同的行数上！add && commit   
-     //test mergre:本地和远程修改在相同的行数上！add && commit      
-     //test mergre:本地和远程修改在相同的行数上！add && commit   
-     //test mergre:本地和远程修改在相同的行数上！add && commit       
-     //test mergre:本地和远程修改在相同的行数上！add && commit   
-     //test mergre:本地和远程修改在相同的行数上！add && commit       
-     //test mergre:本地和远程修改在相同的行数上！add && commit   
-     //test mergre:本地和远程修改在相同的行数上！add && commit       
-     //test mergre:本地和远程修改在相同的行数上！add && commit   
-     //test mergre:本地和远程修改在相同的行数上！add && commit  
-    
     
 };
 
-//test mergre:本地修改！add
-
-//test mergre:本地修改！add && commit
 
 #endif // __MOD_ING_H__
