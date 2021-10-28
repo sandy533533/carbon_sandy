@@ -41,6 +41,7 @@ private:
     int pkt_out_flag = 0;
     int pkt_head_flag = 0;
     s_flow_rule flow_rule;
+    //test git merge --远程修改，本地修改不同行数上，本地已经commit
 
     std::array<std::deque<s_pkt_desc>, G_INTER_NUM> fifo_port;
     std::array<int, G_INTER_NUM> pkt_count_port;
