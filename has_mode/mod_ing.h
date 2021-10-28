@@ -59,7 +59,16 @@ private:
 
     RR_SCH *rr_sch;
 
-    
+    //test git merge --远程修改，本地修改不同行数上，本地已经commit
+    //test git merge --远程修改，本地修改不同行数上，本地已经commit
+    //test git merge --远程修改，本地修改不同行数上，本地已经commit
+    //test git merge --远程修改，本地修改不同行数上，本地已经commit
+    //test git merge --远程修改，本地修改同行数上，本地已经commit
+
+
+
+
+
 };
 
 
